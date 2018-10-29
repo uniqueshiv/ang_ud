@@ -1,10 +1,12 @@
 import { Recipe } from "./recipe-model";
-import { EventEmitter, Injectable } from "@angular/core";
+import { EventEmitter, Injectable, OnInit } from "@angular/core";
 import { Ingredient } from "../shared/ingredient.model";
 import { ShoppingService } from "../shopping-list/shopping-list.service";
+import { Subject } from "rxjs/Subject";
 
 @Injectable()
-export class RecipeService{
+export class RecipeService implements OnInit{
+    recipeChanged=new Subject<Recipe[]>()
     //recipeSelected=new EventEmitter<Recipe>();
     recipes: Recipe[]=[
         new Recipe('A Test Recipe 1','This is smiple desc1','https://www.bbcgoodfood.com/sites/default/files/recipe-collections/collection-image/2013/05/frying-pan-pizza-easy-recipe-collection.jpg',[
@@ -32,4 +34,21 @@ export class RecipeService{
     addIngredientToShoppingList(ingredients:Ingredient[]){
         this.slService.addIngredients(ingredients)
     }
+
+    addRecipe(recipe:Recipe){
+        this.recipes.push(recipe)
+        this.recipeChanged.next(this.recipes.slice())
+    }
+    updateRecipe(index:number,newRecipe:Recipe){
+        this.recipes[index]=newRecipe
+        this.recipeChanged.next(this.recipes.slice())
+    }
+    deleteRecipe(index:number){
+        this.recipes.splice(index,1)
+        this.recipeChanged.next(this.recipes.slice())
+    }
+
+    ngOnInit(): void {
+           this.recipes     
+    } 
 }
